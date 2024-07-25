@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  mode: "jit",
   darkMode: ["class"],
   content: [
     "./pages/**/*.{js,jsx}",
@@ -20,6 +21,8 @@ module.exports = {
       fontFamily: {
         handwriting: ["Handwriting", "sans-serif"],
         typewriting: ["TypeWriter", "sans-serif"],
+        josefin: ["Josefin-Sans", "sans-serif"],
+        roboto: ["Roboto", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",
