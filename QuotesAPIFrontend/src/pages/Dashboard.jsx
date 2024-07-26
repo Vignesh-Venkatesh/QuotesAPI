@@ -2,6 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Navigate } from "react-router-dom";
 import { APIKey } from "@/components/APIKey";
 import { Navbar } from "@/components/Navbar";
+import { CodeExampleBox } from "@/components/CodeExampleBox";
+import { Welcome } from "@/components/Welcome";
+import { EndpointStats } from "@/components/EndpointStats";
+import { Footer } from "@/components/Footer";
 
 const server_link = "http://localhost:3000";
 
@@ -9,22 +13,23 @@ export function Dashboard() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [loggedOut, setLoggedOut] = useState(false);
+  const [apiKey, setApiKey] = useState("");
+  const [apiEndpoint, setApiEndpoint] = useState("/api/v1/quotes/");
 
   useEffect(() => {
-    // Function to fetch user data from the server
     const fetchUser = async () => {
       try {
         const response = await fetch(`${server_link}/api/v1/auth/user`, {
-          credentials: "include", // Ensure cookies are sent with the request
+          credentials: "include",
         });
         if (response.ok) {
           const userData = await response.json();
           setUser(userData);
         } else {
-          setUser(null); // Set user to null if response is not ok
+          setUser(null);
         }
       } catch (error) {
-        setUser(null); // Set user to null in case of an error
+        setUser(null);
       } finally {
         setLoading(false);
       }
@@ -33,12 +38,11 @@ export function Dashboard() {
     fetchUser();
   }, []);
 
-  // Function to handle user logout
   const handleLogout = async () => {
     try {
       const response = await fetch(`${server_link}/api/v1/auth/logout`, {
         method: "POST",
-        credentials: "include", // Ensure cookies are sent with the request
+        credentials: "include",
       });
       if (response.ok) {
         setLoggedOut(true);
@@ -51,7 +55,6 @@ export function Dashboard() {
   };
 
   if (loading) {
-    // Show a loading message while fetching user data
     return (
       <div className="flex items-center justify-center h-screen">
         Loading...
@@ -60,20 +63,27 @@ export function Dashboard() {
   }
 
   if (!user || loggedOut) {
-    // Redirect to the home page if user is not authenticated or if logged out
     return <Navigate to="/" />;
   }
 
   return (
-    <div className="dashboard bg-slate-950 h-screen text-slate-50">
+    <div className="dashboard bg-slate-950 min-h-screen flex flex-col text-slate-50">
       <Navbar user={user._json} handleLogout={handleLogout} />
 
-      <div className="dashboard-content flex">
-        <div className="left w-1/2"></div>
-        <div className="right w-1/2 flex justify-end pr-3">
-          <APIKey user={user} />
+      <div className="dashboard-content flex flex-1 overflow-y-auto ">
+        <div className="left flex flex-col flex-1 pr-3 pl-3">
+          <Welcome user={user._json.name} />
+          <div className="flex-1">
+            <EndpointStats setApiEndpoint={setApiEndpoint} />
+          </div>
+        </div>
+        <div className="right w-[430px] flex flex-col items-end pl-3 pr-3">
+          <APIKey user={user} setApiKey={setApiKey} apiKey={apiKey} />
+          <CodeExampleBox apiKey={apiKey} apiEndpoint={apiEndpoint} />
         </div>
       </div>
+
+      <Footer className="mt-auto" />
     </div>
   );
 }
