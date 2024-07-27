@@ -82,7 +82,6 @@ export const APIKey = ({ user, setApiKey, apiKey }) => {
       setApiKey(data.apiKey);
       toast.success("Generated a new API key");
     } catch (err) {
-      console.error(err);
       toast.error("Failed to generate new API key");
       setError("Failed to generate new API key");
     } finally {

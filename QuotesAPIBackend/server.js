@@ -8,8 +8,14 @@ require("dotenv").config();
 // ===================================================================
 
 // ===================================================================
-const userRoute = require("./auth/user"); // user routes
 const authRoute = require("./auth/auth"); // auth routes
+const quotesRoute = require("./Quotes/quotes"); // quotes routes
+const authorsRoute = require("./Authors/authors"); // authors routes
+// ===================================================================
+
+// ===================================================================
+const authMiddleware = require("./Middleware/apiAuth"); // Auth (API key valiation middleware)
+const statHitMiddleWare = require("./Middleware/apiStat"); // API call tracking Middleware
 // ===================================================================
 
 // ===================================================================
@@ -19,6 +25,9 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 const website = "http://localhost:5173";
+
+// JSON
+app.use(express.json());
 
 // CORS
 app.use(
@@ -43,8 +52,9 @@ app.use(passport.session());
 // ===================================================================
 
 // ===================================================================
-app.use("/api/v1/user", userRoute);
-app.use("/api/v1/auth", authRoute);
+app.use("/api/v1/auth", authRoute); // Auth Route
+app.use("/api/v1/quotes", authMiddleware, statHitMiddleWare, quotesRoute); // Quotes Route
+app.use("/api/v1/authors", authMiddleware, statHitMiddleWare, authorsRoute); // Authors Route
 // ===================================================================
 
 // ===================================================================
