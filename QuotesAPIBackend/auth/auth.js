@@ -12,6 +12,7 @@ const {
   insertUserAPIkey,
   updateUserAPIkey,
   getUserAPIUsage,
+  deleteUser,
 } = require("./queries");
 
 // ===================================================================
@@ -173,6 +174,88 @@ router.get("/getAPIUsageStats", async (req, res) => {
     res.status(200).send(userAPIusage);
   } else {
     res.status(userAPIusage.status).send(userAPIusage);
+  }
+});
+
+// ===================================================================
+
+// ===================================================================
+// Revoke GitHub OAuth token
+const revokeGitHubToken = async (token) => {
+  try {
+    const response = await fetch(
+      `https://api.github.com/applications/${process.env.GITHUB_CLIENT_ID}/token`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `Basic ${Buffer.from(
+            `${process.env.GITHUB_CLIENT_ID}:${process.env.GITHUB_CLIENT_SECRET}`
+          ).toString("base64")}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ access_token: token }),
+      }
+    );
+
+    if (response.status === 204) {
+      console.log("Token successfully revoked");
+      return true;
+    } else {
+      const errorResponse = await response.json();
+      console.error("Failed to revoke token:", errorResponse);
+      return false;
+    }
+  } catch (error) {
+    console.error("Error revoking GitHub token:", error);
+    return false;
+  }
+};
+
+// ===================================================================
+
+// ===================================================================
+// Delete user account
+router.delete("/deleteAccount", async (req, res) => {
+  if (!req.isAuthenticated()) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  try {
+    const userID = req.user.id;
+    const userAPIkey = await getUserAPIkey(userID);
+
+    if (userAPIkey.status !== 200) {
+      return res.status(userAPIkey.status).json({ message: "User not found" });
+    }
+
+    const token = req.user.token;
+
+    // Revoke GitHub OAuth token
+    const tokenRevoked = await revokeGitHubToken(token);
+    if (!tokenRevoked) {
+      return res.status(500).json({ message: "Failed to revoke GitHub token" });
+    }
+
+    // Delete user from database
+    const deleteUserResult = await deleteUser(userID);
+    if (deleteUserResult.status !== 200) {
+      return res
+        .status(deleteUserResult.status)
+        .json({ message: "Failed to delete user" });
+    }
+
+    // Log out user by destroying the session
+    req.logout((err) => {
+      if (err) return res.status(500).json({ message: "Failed to log out" });
+      req.session.destroy((err) => {
+        if (err) return res.status(500).json({ message: "Failed to log out" });
+        res.clearCookie("connect.sid");
+        res.status(200).json({ message: "Account deleted successfully" });
+      });
+    });
+  } catch (error) {
+    console.error("Error deleting account:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 });
 

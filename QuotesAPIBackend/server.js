@@ -8,7 +8,7 @@ require("dotenv").config();
 // ===================================================================
 
 // ===================================================================
-const authRoute = require("./auth/auth"); // auth routes
+const authRoute = require("./Auth/auth"); // auth routes
 const quotesRoute = require("./Quotes/quotes"); // quotes routes
 const authorsRoute = require("./Authors/authors"); // authors routes
 // ===================================================================

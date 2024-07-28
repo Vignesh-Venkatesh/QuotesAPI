@@ -55,7 +55,6 @@ export const Statistics = () => {
           chartData.sort((a, b) => new Date(a.date) - new Date(b.date));
 
           setData({ count: stats.length, data: chartData });
-          console.log(chartData);
         } else {
           console.error("Error fetching API usage stats:", response.statusText);
         }
@@ -77,8 +76,8 @@ export const Statistics = () => {
           The stats below are a view of your API key activity.
         </CardDescription>
       </CardHeader>
-      <CardContent style={{ height: 440 }}>
-        <ResponsiveContainer width="100%" height="100%">
+      <CardContent className="h-[440px]">
+        <ResponsiveContainer width="100%" height="80%">
           <AreaChart data={data.data}>
             <CartesianGrid strokeDasharray="3 3" stroke="#888" />
             <XAxis dataKey="date" stroke="#ccc" />

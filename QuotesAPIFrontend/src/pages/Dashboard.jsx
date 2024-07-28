@@ -74,7 +74,10 @@ export function Dashboard() {
         <div className="left flex flex-col flex-1 pr-3 pl-3">
           <Welcome user={user._json.name} />
           <div className="flex-1">
-            <EndpointStats setApiEndpoint={setApiEndpoint} />
+            <EndpointStats
+              setApiEndpoint={setApiEndpoint}
+              user={user._json.login}
+            />
           </div>
         </div>
         <div className="right w-[430px] flex flex-col items-end pl-3 pr-3 ">
