@@ -67,17 +67,17 @@ export function Dashboard() {
   }
 
   return (
-    <div className="dashboard bg-slate-950 min-h-screen flex flex-col text-slate-50">
+    <div className="dashboard bg-slate-950 min-h-screen flex flex-col text-slate-50 ">
       <Navbar user={user._json} handleLogout={handleLogout} />
 
-      <div className="dashboard-content flex flex-1 overflow-y-auto ">
+      <div className="dashboard-content flex flex-1 overflow-y-auto items-center">
         <div className="left flex flex-col flex-1 pr-3 pl-3">
           <Welcome user={user._json.name} />
           <div className="flex-1">
             <EndpointStats setApiEndpoint={setApiEndpoint} />
           </div>
         </div>
-        <div className="right w-[430px] flex flex-col items-end pl-3 pr-3">
+        <div className="right w-[430px] flex flex-col items-end pl-3 pr-3 ">
           <APIKey user={user} setApiKey={setApiKey} apiKey={apiKey} />
           <CodeExampleBox apiKey={apiKey} apiEndpoint={apiEndpoint} />
         </div>

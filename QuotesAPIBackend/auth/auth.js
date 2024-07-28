@@ -11,6 +11,7 @@ const {
   getUserAPIkey,
   insertUserAPIkey,
   updateUserAPIkey,
+  getUserAPIUsage,
 } = require("./queries");
 
 // ===================================================================
@@ -143,6 +144,35 @@ router.patch("/getNewAPIkey", async (req, res) => {
     res.status(404).send({ message: "User Does Not Exist", status: 404 });
   } else {
     res.status(500).send({ message: "Internal Server Error", status: 500 });
+  }
+});
+
+// ===================================================================
+
+// ===================================================================
+// Get API usage stats of user
+router.get("/getAPIUsageStats", async (req, res) => {
+  if (!req.isAuthenticated()) {
+    return res.status(401).send({ message: "Unauthorized", status: 401 }); // Send unauthorized status if not authenticated
+  }
+
+  const userID = req.user.id;
+
+  if (userID === undefined) {
+    return res.status(400).send({ message: "Invalid User ID", status: 400 }); // Send bad request status if userID is missing
+  }
+
+  // Check if the userID matches the authenticated user's ID
+  if (req.user.id !== userID) {
+    return res.status(403).send({ message: "Forbidden", status: 403 }); // Send forbidden status if IDs do not match
+  }
+
+  const userAPIusage = await getUserAPIUsage(userID);
+
+  if (userAPIusage.status === 200) {
+    res.status(200).send(userAPIusage);
+  } else {
+    res.status(userAPIusage.status).send(userAPIusage);
   }
 });
 

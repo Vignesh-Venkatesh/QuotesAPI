@@ -102,12 +102,12 @@ export const Endpoints = ({ setApiEndpoint }) => {
   };
 
   return (
-    <div className="mt-5 h-[90vh] overflow-y-auto pr-3">
+    <div className="mt-3 overflow-y-auto pr-3 h-[535px]">
       {endpoints.map((endpoint, index) => (
         <Card
           onClick={() => handleAPIEndpointInCodeBlock(endpoint.endpoint)}
           key={index}
-          className="cursor-pointer bg-slate-900 border-none my-4 shadow-lg hover:bg-slate-800"
+          className="cursor-pointer bg-slate-900 border-none my-4 shadow-lg hover:bg-slate-800 "
         >
           <CardHeader className="pt-4 border-b border-slate-700">
             <CardTitle className="flex items-center space-x-2">
